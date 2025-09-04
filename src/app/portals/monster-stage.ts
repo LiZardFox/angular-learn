@@ -8,8 +8,6 @@ import { Environment } from "./environment";
 import { easing } from "maath";
 import CameraControls from "camera-controls";
 
-extend({Mesh, Group});
-
 @Component({
     selector: 'app-monster-stage',
     template: `
@@ -44,7 +42,7 @@ export class MonsterStage {
     rotation = input<NgtEuler>([0, 0, 0]);
 
     protected active = signal(false);
-    
+
     protected BackSide = BackSide;
 
     protected texture = textureResource(() => this.texturePath());
@@ -55,6 +53,8 @@ export class MonsterStage {
     private store = injectStore();
 
     constructor() {
+        extend({ Mesh, Group });
+        
         effect(() => {
             const [isActive, roundedBox, controls] = [this.active(), this.roundedBoxRef().meshRef().nativeElement, this.store.controls()];
             console.log(this.store());
@@ -83,7 +83,7 @@ export class MonsterStage {
             }
         });
 
-        beforeRender(({delta}) => {
+        beforeRender(({ delta }) => {
             const [isActive, material] = [this.active(), this.portalMaterialRef().materialRef().nativeElement];
             easing.damp(material, 'blend', isActive ? 1 : 0, 0.2, delta);
         });
