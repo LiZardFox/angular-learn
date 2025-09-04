@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { NgtCanvas } from "angular-three/dom";
-import { PortalsScene } from "./portals-scene";
+import { NgtCanvas } from 'angular-three/dom';
+import { PortalsScene } from './portals-scene';
 
 @Component({
   imports: [NgtCanvas, PortalsScene],
@@ -10,8 +10,6 @@ import { PortalsScene } from "./portals-scene";
     </ngt-canvas>
   `,
   styles: ``,
-  host: { class: "block h-dvh w-full" }
+  host: { class: 'block h-dvh w-full' },
 })
-export default class Portals {
-
-}
+export default class Portals {}

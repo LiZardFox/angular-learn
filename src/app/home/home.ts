@@ -8,7 +8,7 @@ import { RouterLink } from '@angular/router';
     <div>
       <h1>Welcome!</h1>
       <p>Hello and welcome to our application!</p>
-      
+
       <nav>
         <h2>Navigate to:</h2>
         <ul>
@@ -25,27 +25,25 @@ import { RouterLink } from '@angular/router';
       color: #2c3e50;
       margin-bottom: 1rem;
     }
-    
+
     nav ul {
       list-style-type: none;
       padding: 0;
     }
-    
+
     nav li {
       margin: 0.5rem 0;
     }
-    
+
     nav a {
       color: #3498db;
       text-decoration: none;
       font-weight: 500;
     }
-    
+
     nav a:hover {
       text-decoration: underline;
     }
-  `
+  `,
 })
-export default class Home {
-
-}
+export default class Home {}

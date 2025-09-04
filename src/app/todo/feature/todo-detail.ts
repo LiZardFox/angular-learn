@@ -8,39 +8,44 @@ import { TodoCurrent } from '../data-access/todo-current';
   template: `
     <div class="todo-detail-container">
       <h2 class="page-title">Todo Detail</h2>
-      @if (todo()){
+      @if (todo()) {
         <div class="todo-card">
           <h3 class="todo-title">{{ todo()!.title }}</h3>
           <p class="todo-description">{{ todo()!.description }}</p>
           <div class="todo-status">
             <span class="status-label">Status:</span>
-            <span class="status-badge" [class.completed]="todo()!.completed" [class.pending]="!todo()!.completed">
+            <span
+              class="status-badge"
+              [class.completed]="todo()!.completed"
+              [class.pending]="!todo()!.completed"
+            >
               {{ todo()!.completed ? 'Completed' : 'Pending' }}
             </span>
           </div>
           <div class="todo-actions">
-            <button 
-              class="toggle-button" 
+            <button
+              class="toggle-button"
               [class.complete-btn]="!todo()!.completed"
               [class.uncomplete-btn]="todo()!.completed"
-              (click)="todoService.completeTodo(todo()!.id)">
+              (click)="todoService.completeTodo(todo()!.id)"
+            >
               {{ todo()!.completed ? 'Mark as Pending' : 'Mark as Completed' }}
             </button>
-            <a 
+            <a
               class="toggle-button edit-btn"
-            [routerLink]="['/todo', 'edit', todo()!.id]"
-            >Edit</a>
+              [routerLink]="['/todo', 'edit', todo()!.id]"
+              >Edit</a
+            >
             <button
-            type="button"
-            class="toggle-button delete-btn"
-            (click)="handleDelete()"
+              type="button"
+              class="toggle-button delete-btn"
+              (click)="handleDelete()"
             >
               Delete Todo
             </button>
           </div>
         </div>
-      }
-      @else { 
+      } @else {
         <div class="no-todo">
           <p>No todo selected</p>
         </div>
@@ -175,7 +180,7 @@ import { TodoCurrent } from '../data-access/todo-current';
       color: #6c757d;
       font-style: italic;
     }
-  `
+  `,
 })
 export default class TodoDetail extends TodoCurrent {
   router = inject(Router);

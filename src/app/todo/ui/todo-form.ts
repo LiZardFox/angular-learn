@@ -8,16 +8,16 @@ import { CreateTodo, Todo } from '../interfaces/todo.interface';
   template: `
     <form [formGroup]="todoForm" (ngSubmit)="handleSubmit()" class="todo-form">
       <div class="form-group">
-        <input 
-          type="text" 
-          placeholder="Enter todo title..." 
+        <input
+          type="text"
+          placeholder="Enter todo title..."
           formControlName="title"
           class="form-input"
         />
       </div>
       <div class="form-group">
-        <textarea 
-          placeholder="Enter description (optional)..." 
+        <textarea
+          placeholder="Enter description (optional)..."
           formControlName="description"
           class="form-textarea"
           rows="3"
@@ -86,9 +86,9 @@ import { CreateTodo, Todo } from '../interfaces/todo.interface';
       background: #9ca3af;
       cursor: not-allowed;
     }
-  `
+  `,
 })
-export class TodoForm implements OnInit{
+export class TodoForm implements OnInit {
   private fb = inject(FormBuilder);
   actionLabel = input<string>('Add Todo');
   todo = input<Todo | null>(null);

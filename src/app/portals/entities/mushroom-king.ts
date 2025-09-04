@@ -5,32 +5,68 @@
 
 import type * as THREE from 'three';
 import { Group, SkinnedMesh } from 'three';
-import { extend, type NgtThreeElements, NgtElementEvents, NgtObjectEvents, NgtArgs  } from 'angular-three';
-import { Component, ChangeDetectionStrategy, CUSTOM_ELEMENTS_SCHEMA, input, viewChild, ElementRef, inject, effect, model, signal } from '@angular/core';
+import {
+  extend,
+  type NgtThreeElements,
+  NgtElementEvents,
+  NgtObjectEvents,
+  NgtArgs,
+} from 'angular-three';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  CUSTOM_ELEMENTS_SCHEMA,
+  input,
+  viewChild,
+  ElementRef,
+  inject,
+  effect,
+  model,
+  signal,
+} from '@angular/core';
 import { gltfResource } from 'angular-three-soba/loaders';
 import type { GLTF } from 'three-stdlib';
-import { animations, type NgtsAnimationClips, type NgtsAnimationApi } from 'angular-three-soba/misc';
+import {
+  animations,
+  type NgtsAnimationClips,
+  type NgtsAnimationApi,
+} from 'angular-three-soba/misc';
 
 // @ts-expect-error - import .glb/.gltf file
 import MushroomKingGLTF from '../../../../public/MushroomKing.gltf-transformed.glb' with { loader: 'file' };
 import { modelHoveredAnimation } from '../model-hovered-animation';
 
-
 gltfResource.preload(MushroomKingGLTF);
 
-
-type ActionName = 'Death' | 'Duck' | 'HitReact' | 'Idle' | 'Jump' | 'Jump_Idle' | 'Jump_Land' | 'No' | 'Punch' | 'Run' | 'Walk' | 'Wave' | 'Weapon' | 'Yes';
+type ActionName =
+  | 'Death'
+  | 'Duck'
+  | 'HitReact'
+  | 'Idle'
+  | 'Jump'
+  | 'Jump_Idle'
+  | 'Jump_Land'
+  | 'No'
+  | 'Punch'
+  | 'Run'
+  | 'Walk'
+  | 'Wave'
+  | 'Weapon'
+  | 'Yes';
 type MushroomKingAnimationClips = NgtsAnimationClips<ActionName>;
-export type MushroomKingAnimationApi = Exclude<NgtsAnimationApi<MushroomKingAnimationClips>, { get isReady(): false }>;
+export type MushroomKingAnimationApi = Exclude<
+  NgtsAnimationApi<MushroomKingAnimationClips>,
+  { get isReady(): false }
+>;
 
 export type MushroomKingGLTFGLTFResult = GLTF & {
   nodes: {
-    'Mushroom': THREE.SkinnedMesh;
-'MushroomKing': THREE.SkinnedMesh
-    'Root': THREE.Bone
+    Mushroom: THREE.SkinnedMesh;
+    MushroomKing: THREE.SkinnedMesh;
+    Root: THREE.Bone;
   };
   materials: {
-    'Atlas': THREE.MeshStandardMaterial
+    Atlas: THREE.MeshStandardMaterial;
   };
   animations: MushroomKingAnimationClips[];
 };
@@ -42,11 +78,26 @@ export type MushroomKingGLTFGLTFResult = GLTF & {
       @let nodes = gltf.nodes;
       @let materials = gltf.materials;
 
-      <ngt-group #model [parameters]="options()" (pointerover)="hovered.set(true)" (pointerout)="hovered.set(false)">
-        <ngt-primitive *args=[nodes.Root] />
+      <ngt-group
+        #model
+        [parameters]="options()"
+        (pointerover)="hovered.set(true)"
+        (pointerout)="hovered.set(false)"
+      >
+        <ngt-primitive *args="[nodes.Root]" />
 
-<ngt-skinned-mesh name="Mushroom" [geometry]="nodes.Mushroom.geometry" [material]="materials.Atlas" [skeleton]="nodes.Mushroom.skeleton" />
-<ngt-skinned-mesh name="MushroomKing" [geometry]="nodes.MushroomKing.geometry" [material]="materials.Atlas" [skeleton]="nodes.MushroomKing.skeleton" />
+        <ngt-skinned-mesh
+          name="Mushroom"
+          [geometry]="nodes.Mushroom.geometry"
+          [material]="materials.Atlas"
+          [skeleton]="nodes.Mushroom.skeleton"
+        />
+        <ngt-skinned-mesh
+          name="MushroomKing"
+          [geometry]="nodes.MushroomKing.geometry"
+          [material]="materials.Atlas"
+          [skeleton]="nodes.MushroomKing.skeleton"
+        />
 
         <ng-content />
       </ngt-group>
@@ -57,14 +108,28 @@ export type MushroomKingGLTFGLTFResult = GLTF & {
   hostDirectives: [
     {
       directive: NgtObjectEvents,
-      outputs: ['click', 'dblclick', 'contextmenu', 'pointerup', 'pointerdown', 'pointerover', 'pointerout', 'pointerenter', 'pointerleave', 'pointermove', 'pointermissed', 'pointercancel', 'wheel'],
+      outputs: [
+        'click',
+        'dblclick',
+        'contextmenu',
+        'pointerup',
+        'pointerdown',
+        'pointerover',
+        'pointerout',
+        'pointerenter',
+        'pointerleave',
+        'pointermove',
+        'pointermissed',
+        'pointercancel',
+        'wheel',
+      ],
     },
     {
       directive: NgtElementEvents,
-      outputs: ['attached', 'updated', 'created', 'disposed']
-    }
+      outputs: ['attached', 'updated', 'created', 'disposed'],
+    },
   ],
-  imports: [NgtArgs]
+  imports: [NgtArgs],
 })
 export class MushroomKing {
   protected readonly Math = Math;
@@ -74,26 +139,23 @@ export class MushroomKing {
 
   modelRef = viewChild<ElementRef<Group>>('model');
 
-  protected gltf = gltfResource<MushroomKingGLTFGLTFResult>(() =>  MushroomKingGLTF , { useDraco: true });
+  protected gltf = gltfResource<MushroomKingGLTFGLTFResult>(
+    () => MushroomKingGLTF,
+    { useDraco: true },
+  );
 
   protected hovered = signal(false);
 
   constructor() {
     extend({ Group, SkinnedMesh });
 
-    
     const _animations = animations(this.gltf.value, this.modelRef);
     effect(() => {
       if (!_animations.isReady) return;
       this.animations.set(_animations);
     });
-    
-    modelHoveredAnimation(
-      this.hovered,
-      this.animations,
-      "Walk",
-      "Run"
-    )
+
+    modelHoveredAnimation(this.hovered, this.animations, 'Walk', 'Run');
 
     const objectEvents = inject(NgtObjectEvents, { host: true });
     const elementEvents = inject(NgtElementEvents, { host: true });

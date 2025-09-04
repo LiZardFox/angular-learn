@@ -5,31 +5,61 @@
 
 import type * as THREE from 'three';
 import { Group, SkinnedMesh } from 'three';
-import { extend, type NgtThreeElements, NgtElementEvents, NgtObjectEvents, NgtArgs  } from 'angular-three';
-import { Component, ChangeDetectionStrategy, CUSTOM_ELEMENTS_SCHEMA, input, viewChild, ElementRef, inject, effect, model, signal } from '@angular/core';
+import {
+  extend,
+  type NgtThreeElements,
+  NgtElementEvents,
+  NgtObjectEvents,
+  NgtArgs,
+} from 'angular-three';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  CUSTOM_ELEMENTS_SCHEMA,
+  input,
+  viewChild,
+  ElementRef,
+  inject,
+  effect,
+  model,
+  signal,
+} from '@angular/core';
 import { gltfResource } from 'angular-three-soba/loaders';
 import type { GLTF } from 'three-stdlib';
-import { animations, type NgtsAnimationClips, type NgtsAnimationApi } from 'angular-three-soba/misc';
+import {
+  animations,
+  type NgtsAnimationClips,
+  type NgtsAnimationApi,
+} from 'angular-three-soba/misc';
 
 // @ts-expect-error - import .glb/.gltf file
 import GhostSkullGLTF from '../../../../public/Ghost_Skull.gltf-transformed.glb' with { loader: 'file' };
 import { modelHoveredAnimation } from '../model-hovered-animation';
 
-
 gltfResource.preload(GhostSkullGLTF);
 
-
-type ActionName = 'Death' | 'Fast_Flying' | 'Flying_Idle' | 'Headbutt' | 'HitReact' | 'No' | 'Punch' | 'Yes';
+type ActionName =
+  | 'Death'
+  | 'Fast_Flying'
+  | 'Flying_Idle'
+  | 'Headbutt'
+  | 'HitReact'
+  | 'No'
+  | 'Punch'
+  | 'Yes';
 type GhostSkullAnimationClips = NgtsAnimationClips<ActionName>;
-export type GhostSkullAnimationApi = Exclude<NgtsAnimationApi<GhostSkullAnimationClips>, { get isReady(): false }>;
+export type GhostSkullAnimationApi = Exclude<
+  NgtsAnimationApi<GhostSkullAnimationClips>,
+  { get isReady(): false }
+>;
 
 export type GhostSkullGLTFGLTFResult = GLTF & {
   nodes: {
-    'Ghost_Skull': THREE.SkinnedMesh
-    'Root': THREE.Bone
+    Ghost_Skull: THREE.SkinnedMesh;
+    Root: THREE.Bone;
   };
   materials: {
-    'Atlas': THREE.MeshStandardMaterial
+    Atlas: THREE.MeshStandardMaterial;
   };
   animations: GhostSkullAnimationClips[];
 };
@@ -41,10 +71,20 @@ export type GhostSkullGLTFGLTFResult = GLTF & {
       @let nodes = gltf.nodes;
       @let materials = gltf.materials;
 
-      <ngt-group #model [parameters]="options()" (pointerover)="hovered.set(true)" (pointerout)="hovered.set(false)">
-        <ngt-primitive *args=[nodes.Root] />
+      <ngt-group
+        #model
+        [parameters]="options()"
+        (pointerover)="hovered.set(true)"
+        (pointerout)="hovered.set(false)"
+      >
+        <ngt-primitive *args="[nodes.Root]" />
 
-<ngt-skinned-mesh name="Ghost_Skull" [geometry]="nodes.Ghost_Skull.geometry" [material]="materials.Atlas" [skeleton]="nodes.Ghost_Skull.skeleton" />
+        <ngt-skinned-mesh
+          name="Ghost_Skull"
+          [geometry]="nodes.Ghost_Skull.geometry"
+          [material]="materials.Atlas"
+          [skeleton]="nodes.Ghost_Skull.skeleton"
+        />
 
         <ng-content />
       </ngt-group>
@@ -55,14 +95,28 @@ export type GhostSkullGLTFGLTFResult = GLTF & {
   hostDirectives: [
     {
       directive: NgtObjectEvents,
-      outputs: ['click', 'dblclick', 'contextmenu', 'pointerup', 'pointerdown', 'pointerover', 'pointerout', 'pointerenter', 'pointerleave', 'pointermove', 'pointermissed', 'pointercancel', 'wheel'],
+      outputs: [
+        'click',
+        'dblclick',
+        'contextmenu',
+        'pointerup',
+        'pointerdown',
+        'pointerover',
+        'pointerout',
+        'pointerenter',
+        'pointerleave',
+        'pointermove',
+        'pointermissed',
+        'pointercancel',
+        'wheel',
+      ],
     },
     {
       directive: NgtElementEvents,
-      outputs: ['attached', 'updated', 'created', 'disposed']
-    }
+      outputs: ['attached', 'updated', 'created', 'disposed'],
+    },
   ],
-  imports: [NgtArgs]
+  imports: [NgtArgs],
 })
 export class GhostSkull {
   protected readonly Math = Math;
@@ -72,7 +126,10 @@ export class GhostSkull {
 
   modelRef = viewChild<ElementRef<Group>>('model');
 
-  protected gltf = gltfResource<GhostSkullGLTFGLTFResult>(() =>  GhostSkullGLTF , { useDraco: true });
+  protected gltf = gltfResource<GhostSkullGLTFGLTFResult>(
+    () => GhostSkullGLTF,
+    { useDraco: true },
+  );
 
   protected hovered = signal(false);
 
@@ -82,9 +139,9 @@ export class GhostSkull {
     modelHoveredAnimation(
       this.hovered,
       this.animations,
-      "Flying_Idle",
-      "Fast_Flying"
-    )
+      'Flying_Idle',
+      'Fast_Flying',
+    );
     const _animations = animations(this.gltf.value, this.modelRef);
     effect(() => {
       if (!_animations.isReady) return;
