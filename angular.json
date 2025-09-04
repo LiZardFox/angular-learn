@@ -55,7 +55,10 @@
             ],
             "styles": [
               "src/styles.scss"
-            ]
+            ],
+            "loader": {
+              ".glb": "file"
+            }
           },
           "configurations": {
             "production": {
