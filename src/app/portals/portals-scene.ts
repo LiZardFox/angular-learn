@@ -9,7 +9,7 @@ import { MushroomKing } from "./entities/mushroom-king";
 @Component({
     selector: 'app-portals-scene',
     template: `
-    <ngts-camera-controls [options]="{ makeDefault: true, maxPolarAngle: Math.PI / 2, minPolarAngle: Math.PI / 3 }" />
+    <ngts-camera-controls [options]="{ makeDefault: true, maxPolarAngle: Math.PI / 2, minPolarAngle: Math.PI / 3, minDistance: 10, maxDistance: 10 }" />
     <app-environment />
 
     <app-monster-stage [texturePath]="'./ghost-town.jpg'" [position]="[0, 0, -0.5]">

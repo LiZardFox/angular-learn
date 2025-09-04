@@ -41,7 +41,7 @@ export type NinjaGLTFGLTFResult = GLTF & {
       @let nodes = gltf.nodes;
       @let materials = gltf.materials;
 
-      <ngt-group #model [parameters]="options()" [dispose]="null" (pointerover)="hovered.set(true)" (pointerout)="hovered.set(false)">
+      <ngt-group #model [parameters]="options()" (pointerover)="hovered.set(true)" (pointerout)="hovered.set(false)">
         <ngt-primitive *args=[nodes.Root] />
 
 <ngt-skinned-mesh name="Ninja" [geometry]="nodes.Ninja.geometry" [material]="materials.Atlas" [skeleton]="nodes.Ninja.skeleton" />

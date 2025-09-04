@@ -64,7 +64,7 @@ export class MonsterStage {
                 void (controls as CameraControls).setLookAt(
                     0,
                     0,
-                    5,
+                    10,
                     targetPosition.x,
                     targetPosition.y,
                     targetPosition.z,

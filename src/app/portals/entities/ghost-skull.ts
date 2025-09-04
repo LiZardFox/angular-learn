@@ -41,7 +41,7 @@ export type GhostSkullGLTFGLTFResult = GLTF & {
       @let nodes = gltf.nodes;
       @let materials = gltf.materials;
 
-      <ngt-group #model [parameters]="options()" [dispose]="null" (pointerover)="hovered.set(true)" (pointerout)="hovered.set(false)">
+      <ngt-group #model [parameters]="options()" (pointerover)="hovered.set(true)" (pointerout)="hovered.set(false)">
         <ngt-primitive *args=[nodes.Root] />
 
 <ngt-skinned-mesh name="Ghost_Skull" [geometry]="nodes.Ghost_Skull.geometry" [material]="materials.Atlas" [skeleton]="nodes.Ghost_Skull.skeleton" />
