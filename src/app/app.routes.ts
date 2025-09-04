@@ -14,6 +14,9 @@ export const routes: Routes = [
         path: 'portals', loadChildren: () => import('./portals/portals.routes')
     },
     {
+        path: 'game', loadChildren: () => import('./game/feature/game.routes')
+    },
+    {
         path: '', redirectTo: 'home', pathMatch: 'full'
     },
 ];

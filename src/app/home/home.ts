@@ -15,6 +15,7 @@ import { RouterLink } from '@angular/router';
           <li><a routerLink="/todo">Todo List</a></li>
           <li><a routerLink="/slideshow">Slideshow</a></li>
           <li><a routerLink="/portals">Portals</a></li>
+          <li><a routerLink="/game">Games</a></li>
         </ul>
       </nav>
     </div>
