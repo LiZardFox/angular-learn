@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { provideNgtRenderer } from 'angular-three/dom';
 
 export default [
   {
@@ -8,10 +9,11 @@ export default [
   {
     path: 'play',
     loadComponent: () => import('./play'),
+    providers: [provideNgtRenderer()],
     children: [
       {
         path: 'hiragana',
-        loadComponent: () => import('../games/hiragana'),
+        loadComponent: () => import('../games/hiragana/kana-game'),
       },
     ],
   },

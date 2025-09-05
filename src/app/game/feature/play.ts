@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { NgtCanvasImpl } from 'angular-three/dom';
+import { NgtCanvas } from 'angular-three/dom';
 import { NgtRoutedScene } from 'angular-three';
 import { Overlay } from '../ui/overlay';
 
 @Component({
-  imports: [NgtCanvasImpl, NgtRoutedScene, Overlay],
+  imports: [NgtCanvas, NgtRoutedScene, Overlay],
   template: `
-    <ngt-canvas>
-      <ngt-routed-scene />
+    <ngt-canvas shadows>
+      <ngt-routed-scene *canvasContent />
     </ngt-canvas>
     <game-overlay />
   `,
