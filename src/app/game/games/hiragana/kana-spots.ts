@@ -22,6 +22,7 @@ import {
 } from 'angular-three-rapier';
 import { NgtsText3D } from 'angular-three-soba/abstractions';
 import { NgtsCenter } from 'angular-three-soba/staging';
+import { NgtsMeshTransmissionMaterial } from 'angular-three-soba/materials';
 
 @Component({
   selector: 'game-kana-spots',
@@ -35,7 +36,7 @@ import { NgtsCenter } from 'angular-three-soba/staging';
             0,
           ]"
         >
-          <ngt-group [position]="[3.5, 0, -3.5]">
+          <ngt-group [position]="[3.5, 0.5, -3.5]">
             <ngt-object3D
               rigidBody="fixed"
               [options]="{
@@ -50,8 +51,39 @@ import { NgtsCenter } from 'angular-three-soba/staging';
                 </ngt-mesh>
               </ngt-object3D>
             </ngt-object3D>
-
-            <ngts-center [options]="{ position: [0, 1, 0] }">
+            <ngt-mesh [scale]="1.22" [position]="[0, 1.2, 0]">
+              <ngts-mesh-transmission-material
+                [options]="{
+                  transmissionSampler: false,
+                  backside: false,
+                  samples: 10,
+                  resolution: 1024,
+                  transmission: 1,
+                  roughness: 0.0,
+                  thickness: 0,
+                  ior: 1,
+                  chromaticAberration: 0,
+                  anisotropy: 0,
+                  distortion: 0,
+                  distortionScale: 0,
+                  temporalDistortion: 0,
+                  clearcoat: 1,
+                  attenuationDistance: 1,
+                  color: '#efbeff',
+                }"
+              />
+              <ngt-sphere-geometry />
+            </ngt-mesh>
+            <ngts-center
+              [options]="{
+                position: [0, 1, 0],
+                rotation: [
+                  0,
+                  -(($index / currentStage.kanas.length) * Math.PI * 2),
+                  0,
+                ],
+              }"
+            >
               <ngts-text-3D
                 [text]="
                   kanaStore.mode() === 'hiragana'
@@ -63,7 +95,10 @@ import { NgtsCenter } from 'angular-three-soba/staging';
                   size: 0.82,
                 }"
               >
-                <ngt-mesh-normal-material />
+                <ngt-mesh-standard-material
+                  color="orange"
+                  [toneMapped]="false"
+                />
               </ngts-text-3D>
             </ngts-center>
           </ngt-group>
@@ -79,13 +114,13 @@ import { NgtsCenter } from 'angular-three-soba/staging';
     NgtrCylinderCollider,
     NgtsText3D,
     NgtsCenter,
+    NgtsMeshTransmissionMaterial,
   ],
 })
 export class KanaSpots {
   protected readonly kanaStore = inject(KanaGameStore);
   protected readonly Math = Math;
   private centerRefs = viewChildren(NgtsCenter);
-  private rigidBodyRefs = viewChildren(NgtrRigidBody);
 
   constructor() {
     extend({
@@ -95,19 +130,6 @@ export class KanaSpots {
       Object3D,
       Mesh,
       CylinderGeometry,
-    });
-
-    beforeRender(({ camera }) => {
-      this.centerRefs().forEach((centerRef) => {
-        const textObject = centerRef.groupRef().nativeElement;
-        if (textObject) {
-          textObject.lookAt(
-            camera.position.x,
-            textObject.position.y,
-            camera.position.z,
-          );
-        }
-      });
     });
   }
 }

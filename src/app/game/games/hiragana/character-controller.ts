@@ -23,7 +23,8 @@ import { KanaGameStore } from './data-access/store';
 
 const JUMP_FORCE = 0.5;
 const MOVEMENT_SPEED = 0.1;
-const MAX_VELOCITY = 2;
+const MAX_VELOCITY = 3;
+const RUN_VELOCITY = 1.5;
 
 @Component({
   selector: 'game-character-controller',
@@ -41,7 +42,7 @@ const MAX_VELOCITY = 2;
       >
         <ngt-object3D [capsuleCollider]="[0.8, 0.4]" [position]="[0, 1.2, 0]" />
         <ngt-group #character>
-          <game-character />
+          <game-character [characterState]="characterState()" />
         </ngt-group>
       </ngt-object3D>
     </ngt-group>
@@ -54,6 +55,7 @@ export class CharacterController {
   readonly controls = input<Set<Control>>(new Set());
 
   protected readonly isOnFloor = signal(true);
+  protected readonly characterState = signal<'Idle' | 'Run'>('Idle');
 
   private readonly jumpPressed = computed(() => this.controls().has('jump'));
   private readonly forwardPressed = computed(() =>
@@ -117,6 +119,20 @@ export class CharacterController {
         character.rotation.y = angle;
       }
 
+      const characterState = this.characterState();
+      if (
+        Math.abs(linvel.x) > RUN_VELOCITY ||
+        Math.abs(linvel.z) > RUN_VELOCITY
+      ) {
+        if (characterState !== 'Run') {
+          this.characterState.set('Run');
+        }
+      } else {
+        if (characterState !== 'Idle') {
+          this.characterState.set('Idle');
+        }
+      }
+
       const characterWorldPosition = character.getWorldPosition(new Vector3());
       camera.position.x = characterWorldPosition.x;
       camera.position.z = characterWorldPosition.z + 14;
@@ -129,7 +145,7 @@ export class CharacterController {
   resetPosition() {
     const rigidBody = this.rigidBodyRef().rigidBody();
     if (!rigidBody) return;
-    rigidBody.setTranslation({ x: 0, y: 2, z: 0 }, true);
+    rigidBody.setTranslation({ x: 0, y: 1, z: 0 }, true);
     rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
   }
 

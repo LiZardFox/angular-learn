@@ -51,6 +51,7 @@ export class KanaGameStore {
   #gameState = signal<GameState>(gameStates.MENU);
   #level = signal<Stage[]>([]);
   #currentStageKey = signal(0);
+  #lastWrongKana = signal<Kana | null>(null);
   #mode = signal<'hiragana' | 'katakana'>('hiragana');
   #wrongAnswers = signal<number>(0);
 
@@ -64,6 +65,7 @@ export class KanaGameStore {
   currentKana = computed(
     () => this.currentStage()?.kanas[this.currentStage()!.correctIdx] ?? null,
   );
+  lastWrongKana = this.#lastWrongKana.asReadonly();
   wrongAnswers = this.#wrongAnswers.asReadonly();
 
   startGame: (config: {
@@ -83,6 +85,7 @@ export class KanaGameStore {
     if (nextIndex < this.level().length) {
       this.playAudio('good');
       this.playAudio('correct0', () => {
+        this.#lastWrongKana.set(null);
         this.#currentStageKey.set(nextIndex);
       });
     } else {
@@ -119,6 +122,7 @@ export class KanaGameStore {
         this.playAudio('fail');
       });
       this.#wrongAnswers.update((n) => n + 1);
+      this.#lastWrongKana.set(kana);
     }
   };
 

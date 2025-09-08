@@ -62,7 +62,7 @@ export class Kicker {
       const currentRotation = new Quaternion(x, y, z, w);
       const incrementRotation = new Quaternion().setFromAxisAngle(
         new Vector3(0, 1, 0),
-        delta * 4,
+        delta * 8,
       );
       currentRotation.multiply(incrementRotation);
       rigidBody.setNextKinematicRotation(currentRotation);

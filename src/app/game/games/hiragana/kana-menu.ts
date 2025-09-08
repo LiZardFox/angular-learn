@@ -15,13 +15,13 @@ import { KanaGameStore } from './data-access/store';
         <h1 class="text-4xl font-bold mb-8 text-white">Kana Menu</h1>
         <button
           class="px-6 py-3 bg-blue-600/60 text-white rounded hover:bg-blue-700/60 transition cursor-pointer"
-          (click)="kanaStore.startGame({ stages: 5, mode: 'hiragana' })"
+          (click)="kanaStore.startGame({ stages: 6, mode: 'hiragana' })"
         >
           Start Hiragana Game
         </button>
         <button
           class="px-6 py-3 bg-blue-600/60 text-white rounded hover:bg-blue-700/60 transition"
-          (click)="kanaStore.startGame({ stages: 5, mode: 'katakana' })"
+          (click)="kanaStore.startGame({ stages: 6, mode: 'katakana' })"
         >
           Start Katakana Game
         </button>
