@@ -27,6 +27,7 @@ import { AxeController } from './axe-controller';
 import { Target } from './target';
 import { VFXEmitter, VFXParticles } from 'wawa-vfx-vanilla';
 import { NgtsEnvironment } from 'angular-three-soba/staging';
+import { Balloons } from './balloons';
 
 @Component({
   selector: 'game-axe-throwing-experience',
@@ -37,6 +38,7 @@ import { NgtsEnvironment } from 'angular-three-soba/staging';
       <game-axe-throwing-target />
     </ngt-group>
 
+    <game-axe-throwing-balloons />
     <game-axe-throwing-controller />
     <gradient-sky />
     <ngts-grid
@@ -93,6 +95,7 @@ import { NgtsEnvironment } from 'angular-three-soba/staging';
     Target,
     NgtsEnvironment,
     NgtArgs,
+    Balloons,
   ],
 })
 export default class AxeThrowingExperience {

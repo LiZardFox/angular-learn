@@ -13,7 +13,10 @@ import {
 import { gltfResource } from 'angular-three-soba/loaders';
 import { axeSmall } from './models';
 import { beforeRender, NgtArgs } from 'angular-three';
-import { NgtrCollisionEnterPayload, NgtrRigidBody } from 'angular-three-rapier';
+import {
+  NgtrIntersectionEnterPayload,
+  NgtrRigidBody,
+} from 'angular-three-rapier';
 import { Game } from './data-access/game';
 import { RigidBodyType, Vector } from '@dimforge/rapier3d-compat';
 import { VFXEmitter } from 'wawa-vfx-vanilla';
@@ -49,8 +52,9 @@ import { VFXEmitter } from 'wawa-vfx-vanilla';
     <ngt-object3D
       rigidBody="kinematicPosition"
       [position]="[0, 1, 5]"
-      [options]="{ colliders: 'hull' }"
-      (collisionEnter)="onCollision($event)"
+      [options]="{ colliders: 'hull', sensor: true }"
+      (intersectionEnter)="onIntersectiton($event)"
+      name="axe"
     >
       @if (axeGltf.value(); as axeGltf) {
         <ngt-primitive *args="[axeGltf.scene]" [position.y]="-0.3" />
@@ -78,7 +82,7 @@ export class AxeController implements OnInit, OnDestroy {
     window.removeEventListener('pointerup', this.onPointerUp);
   }
 
-  onCollision(event: NgtrCollisionEnterPayload) {
+  onIntersectiton(event: NgtrIntersectionEnterPayload) {
     if (event.other.rigidBodyObject?.name === 'target') {
       const rb = this.rigidBody().rigidBody()!;
       rb.setBodyType(RigidBodyType.KinematicPositionBased, false);
@@ -96,6 +100,8 @@ export class AxeController implements OnInit, OnDestroy {
         rb.setBodyType(RigidBodyType.Dynamic, false);
         rb.applyImpulse({ x: 1, y: 0.5, z: 0 }, true);
         rb.applyTorqueImpulse({ x: 0, y: 0, z: -0.2 }, true);
+      } else {
+        this.impact.set(false);
       }
     });
 

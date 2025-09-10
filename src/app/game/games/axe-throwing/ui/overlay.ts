@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Game } from '../data-access/game';
 
 @Component({
   selector: 'game-axe-throwing-overlay',
@@ -26,6 +27,7 @@ import { Component } from '@angular/core';
           balloons. 🎈 <br />
         </p>
         <button
+          (click)="gameState.startGame()"
           class="bg-white/80 text-black font-bold px-4 py-2 rounded-lg shadow-md hover:bg-white/100 transition duration-200 pointer-events-auto cursor-pointer"
         >
           Start Game
@@ -34,4 +36,6 @@ import { Component } from '@angular/core';
     </section>
   `,
 })
-export class AxeThrowingOverlay {}
+export class AxeThrowingOverlay {
+  gameState = inject(Game);
+}
