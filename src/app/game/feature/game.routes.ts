@@ -7,13 +7,23 @@ export default [
     loadComponent: () => import('./overview'),
   },
   {
+    path: 'play/axe-throwing',
+    loadComponent: () => import('../games/axe-throwing/axe-throwing'),
+    providers: [provideNgtRenderer()],
+  },
+  {
     path: 'play',
     loadComponent: () => import('./play'),
     providers: [provideNgtRenderer()],
     children: [
       {
-        path: 'hiragana',
+        path: 'kana',
         loadComponent: () => import('../games/hiragana/kana-game'),
+      },
+      {
+        path: 'third-person-controller',
+        loadComponent: () =>
+          import('../games/third-person-controller/experience'),
       },
     ],
   },

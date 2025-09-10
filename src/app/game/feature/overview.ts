@@ -111,9 +111,23 @@ export default class Overview {
     {
       id: 1,
       title: 'Game',
-      description: 'View top players and rankings',
-      route: '/game/play/hiragana',
+      description: 'Learn and practice Hiragana and Katakana Characters',
+      route: '/game/play/kana',
+      icon: 'あ',
+    },
+    {
+      id: 2,
+      title: 'Third Person Controller',
+      description: 'Explore a 3D environment with a third-person character',
+      route: '/game/play/third-person-controller',
       icon: '🎮',
+    },
+    {
+      id: 3,
+      title: 'Axe Throwing',
+      description: 'Throw axes at targets in a fun 3D game',
+      route: '/game/play/axe-throwing',
+      icon: '🪓',
     },
   ];
 }
