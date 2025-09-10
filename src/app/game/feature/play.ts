@@ -12,5 +12,6 @@ import { Overlay } from '../ui/overlay';
     <game-overlay />
   `,
   host: { class: 'block w-full h-dvh' },
+  styles: [':host { touch-action: none; }'],
 })
 export default class Play {}
