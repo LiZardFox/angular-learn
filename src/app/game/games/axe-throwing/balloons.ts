@@ -3,7 +3,6 @@ import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
   effect,
-  ElementRef,
   inject,
   input,
   signal,
@@ -21,7 +20,6 @@ import {
 import { GLTF } from 'three-stdlib';
 import { Group, Mesh, MeshStandardMaterial, Object3D } from 'three';
 import { beforeRender, extend } from 'angular-three';
-import { VFXEmitter } from 'wawa-vfx-vanilla';
 import { PositionalAudio } from './util/positonal-audio';
 import { AUDIOS } from './audio';
 import { ParticleEmitter } from './util/vfx-emitter';
@@ -110,7 +108,6 @@ export class Balloon {
     }
   >(() => balloon);
   exploded = signal(false);
-  emitter = viewChild<ElementRef<VFXEmitter>>('emitter');
   rigidBody = viewChild(NgtrRigidBody);
 
   onIntersection(event: NgtrIntersectionEnterPayload) {
@@ -120,7 +117,7 @@ export class Balloon {
   }
 
   constructor() {
-    extend({ Mesh, Object3D, Group, WawaEmitter: VFXEmitter });
+    extend({ Mesh, Object3D, Group });
 
     effect(() => {
       const [exploded, ballon] = [this.exploded(), this.balloon()];

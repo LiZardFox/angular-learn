@@ -1,10 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   CUSTOM_ELEMENTS_SCHEMA,
   effect,
   ElementRef,
   inject,
+  signal,
   viewChild,
 } from '@angular/core';
 import {
@@ -12,6 +14,7 @@ import {
   createAttachFunction,
   extend,
   NgtArgs,
+  NgtVector3,
 } from 'angular-three';
 import { NgtsGrid } from 'angular-three-soba/abstractions';
 import { NgtsPerspectiveCamera } from 'angular-three-soba/cameras';
@@ -26,7 +29,7 @@ import { GradientSky } from './gradient-sky';
 import { AxeController } from './axe-controller';
 import { Target } from './target';
 import { RenderMode, VFXEmitter, VFXParticles } from 'wawa-vfx-vanilla';
-import { NgtsEnvironment } from 'angular-three-soba/staging';
+import { NgtsClouds, NgtsEnvironment } from 'angular-three-soba/staging';
 import { Balloons } from './balloons';
 import { Particles } from './util/vfx-particles';
 import { ParticleEmitter } from './util/vfx-emitter';
@@ -34,7 +37,9 @@ import { Game } from './data-access/game';
 import { NgtsCameraControls } from 'angular-three-soba/controls';
 import { Walls } from './walls';
 import { AncientRuin } from './ancient-ruin';
-import { degToRad } from 'three/src/math/MathUtils.js';
+import { degToRad, randFloat } from 'three/src/math/MathUtils.js';
+import { Cloud } from './cloud';
+import { range } from 'rxjs';
 
 @Component({
   selector: 'game-axe-throwing-experience',
@@ -75,6 +80,15 @@ import { degToRad } from 'three/src/math/MathUtils.js';
     <game-axe-throwing-balloons />
     <game-axe-throwing-controller />
     <gradient-sky />
+    <ngts-clouds [options]="{ limit: 400 }">
+      @for (cloud of clouds(); track cloud.id) {
+        <game-cloud
+          [seed]="cloud.seed"
+          [position]="cloud.position"
+          [range]="cloud.range"
+        />
+      }
+    </ngts-clouds>
     <ngts-grid
       [options]="{
         position: [0, -10, 0],
@@ -159,6 +173,8 @@ import { degToRad } from 'three/src/math/MathUtils.js';
     NgtsCameraControls,
     Walls,
     AncientRuin,
+    NgtsClouds,
+    Cloud,
   ],
 })
 export default class AxeThrowingExperience {
@@ -167,6 +183,22 @@ export default class AxeThrowingExperience {
 
   private gameState = inject(Game);
   private controls = viewChild(NgtsCameraControls);
+  clouds = signal(this.generateClouds());
+
+  generateClouds() {
+    return Array(4)
+      .fill(0)
+      .map((_, index) => ({
+        id: `cloud-${index}`,
+        seed: randFloat(1, 100),
+        position: [
+          randFloat(-20, 0) + index * 10,
+          randFloat(10, 15),
+          randFloat(-2, 2),
+        ] as NgtVector3,
+        range: [-30, 40] as [number, number],
+      }));
+  }
   constructor() {
     extend({
       MeshStandardMaterial,
@@ -174,8 +206,6 @@ export default class AxeThrowingExperience {
       BoxGeometry,
       DirectionalLight,
       Group,
-      WawaParticles: VFXParticles,
-      WawaEmitter: VFXEmitter,
     });
 
     effect(() => {

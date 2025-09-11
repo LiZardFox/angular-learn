@@ -10,6 +10,7 @@ export default [
     path: 'play/axe-throwing',
     loadComponent: () => import('../games/axe-throwing/axe-throwing'),
     providers: [provideNgtRenderer()],
+    title: 'Axe Throwing',
   },
   {
     path: 'play',
