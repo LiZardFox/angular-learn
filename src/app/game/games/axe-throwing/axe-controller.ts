@@ -80,9 +80,9 @@ import { AUDIOS } from './audio';
               [settings]="{
                 loop: true,
                 spawnMode: 'time',
-                nbParticles: 80,
+                nbParticles: 40,
                 particlesLifetime: [1, 1],
-                duration: 0.5,
+                duration: 1.5,
                 size: [1, 1],
                 startPositionMin: [0, 0, 0],
                 startPositionMax: [0, 0, 0],

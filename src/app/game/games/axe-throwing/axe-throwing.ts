@@ -13,6 +13,7 @@ import { Color } from 'three';
 import { PositionalAudio } from './util/positonal-audio';
 import AxeThrowingExperience from './experience';
 import { AxeThrowingOverlay } from './ui/overlay';
+import { NgtsLoader } from 'angular-three-soba/loaders';
 
 @Component({
   template: `
@@ -20,7 +21,7 @@ import { AxeThrowingOverlay } from './ui/overlay';
     <ngt-canvas [camera]="{ position: [-0.1, 0, 0], fov: 50 }" shadows>
       <ng-template canvasContent>
         <ngt-color attach="background" *args="['#111']" />
-        <ngtr-physics [options]="{ debug: false }">
+        <ngtr-physics [options]="{ debug: false, colliders: false }">
           <ng-template>
             <game-axe-throwing-experience />
           </ng-template>
@@ -43,6 +44,7 @@ import { AxeThrowingOverlay } from './ui/overlay';
         }
       </ng-template>
     </ngt-canvas>
+    <ngts-loader />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -55,6 +57,7 @@ import { AxeThrowingOverlay } from './ui/overlay';
     PositionalAudio,
     AxeThrowingExperience,
     AxeThrowingOverlay,
+    NgtsLoader,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   host: { class: 'block w-full h-dvh' },

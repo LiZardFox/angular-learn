@@ -74,15 +74,11 @@ export class AxeThrowingOverlay {
   gameState = inject(Game);
   throws = computed(() => Array(this.gameState.throws()).fill(0));
   backgroundClasses = computed(() => {
-    const [firstGame, throws] = [
-      this.gameState.firstGame(),
-      this.gameState.throws(),
-    ];
-    const showMenu = throws === 0 && !firstGame;
+    const [throws] = [this.gameState.throws()];
+    const showMenu = throws === 0;
     return {
       'bg-black/20': showMenu,
       'bg-background-blur': showMenu,
-      'bg-black': firstGame,
     };
   });
 }

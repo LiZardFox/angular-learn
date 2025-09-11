@@ -4,22 +4,15 @@ import {
   computed,
   CUSTOM_ELEMENTS_SCHEMA,
   effect,
-  ElementRef,
   inject,
   signal,
   viewChild,
 } from '@angular/core';
-import {
-  beforeRender,
-  createAttachFunction,
-  extend,
-  NgtArgs,
-  NgtVector3,
-} from 'angular-three';
+import { extend, NgtVector3 } from 'angular-three';
 import { NgtsGrid } from 'angular-three-soba/abstractions';
 import { NgtsPerspectiveCamera } from 'angular-three-soba/cameras';
 import {
-  BoxGeometry,
+  CircleGeometry,
   DirectionalLight,
   Group,
   Mesh,
@@ -28,7 +21,7 @@ import {
 import { GradientSky } from './gradient-sky';
 import { AxeController } from './axe-controller';
 import { Target } from './target';
-import { RenderMode, VFXEmitter, VFXParticles } from 'wawa-vfx-vanilla';
+import { RenderMode } from 'wawa-vfx-vanilla';
 import { NgtsClouds, NgtsEnvironment } from 'angular-three-soba/staging';
 import { Balloons } from './balloons';
 import { Particles } from './util/vfx-particles';
@@ -39,7 +32,9 @@ import { Walls } from './walls';
 import { AncientRuin } from './ancient-ruin';
 import { degToRad, randFloat } from 'three/src/math/MathUtils.js';
 import { Cloud } from './cloud';
-import { range } from 'rxjs';
+import { gltfResource } from 'angular-three-soba/loaders';
+import { axeSmallApp } from './models';
+import { GLTF } from 'three-stdlib';
 
 @Component({
   selector: 'game-axe-throwing-experience',
@@ -59,11 +54,11 @@ import { range } from 'rxjs';
       [settings]="{
         duration: 10,
         delay: 0,
-        nbParticles: 5000,
+        nbParticles: 2000,
         spawnMode: 'time',
         loop: true,
-        startPositionMin: [-20, -20, -20],
-        startPositionMax: [20, 20, 20],
+        startPositionMin: [-10, -20, -20],
+        startPositionMax: [30, 20, 20],
         startRotationMin: [0, 0, 0],
         startRotationMax: [0, 0, 0],
         particlesLifetime: [4, 10],
@@ -73,7 +68,7 @@ import { range } from 'rxjs';
         rotationSpeedMin: [0, 0, 0],
         rotationSpeedMax: [0, 0, 0],
         colorStart: ['#ffffff', '#b7b0e3', 'pink'],
-        size: [0.01, 0.05],
+        size: [0.05, 0.2],
       }"
     />
     <game-axe-throwing-walls />
@@ -98,13 +93,7 @@ import { range } from 'rxjs';
         fadeStrength: 5,
       }"
     />
-    <ngt-directional-light
-      [parameters]="{
-        position: [30, 15, 30],
-        castShadow: true,
-        intensity: 1,
-      }"
-    >
+    <ngt-directional-light [intensity]="2" [position]="[30, 15, 30]" castShadow>
       <ngt-value attach="shadow.mapSize.width" [rawValue]="1024" />
       <ngt-value attach="shadow.mapSize.height" [rawValue]="1024" />
       <ngt-value attach="shadow.bias" [rawValue]="-0.005" />
@@ -117,24 +106,25 @@ import { range } from 'rxjs';
     </ngt-directional-light>
     <game-axe-throwing-ancient-ruin
       [options]="{
-        castShadow: true,
-        receiveShadow: true,
         scale: 3,
         rotation: [0, degToRad(-90), 0],
         position: [10, -8, 0],
       }"
     />
-    <ngts-environment [options]="{ preset: 'sunset' }" />
+    <ngts-environment
+      [options]="{ preset: 'sunset', environmentIntensity: 0.3 }"
+    />
     <vfx-particles
       name="stars"
       [settings]="{
         fadeAlpha: [0.5, 0.5],
         fadeSize: [0.5, 0.5],
-        gravity: [0, 0.2, 0],
+        gravity: [0, 0, 0],
         intensity: 5,
-        nbParticles: 5000,
+        nbParticles: 2000,
         renderMode: RenderMode.Billboard,
       }"
+      [geometry]="circleGeometry"
     />
     <vfx-particles
       name="sparks"
@@ -143,17 +133,18 @@ import { range } from 'rxjs';
         fadeSize: [0, 0],
         gravity: [0, -9.81, 0],
         intensity: 8,
-        nbParticles: 100000,
+        nbParticles: 23000,
         renderMode: RenderMode.Billboard,
       }"
     />
     <vfx-particles
       name="axes"
+      [geometry]="axeGeometry()"
       [settings]="{
         fadeAlpha: [0, 0],
         fadeSize: [0, 1],
         intensity: 2,
-        nbParticles: 200,
+        nbParticles: 40,
         renderMode: RenderMode.Mesh,
       }"
     />
@@ -183,10 +174,23 @@ export default class AxeThrowingExperience {
 
   private gameState = inject(Game);
   private controls = viewChild(NgtsCameraControls);
+
   clouds = signal(this.generateClouds());
+  circleGeometry = new CircleGeometry(0.1, 20);
+
+  private smallAxeGltf = gltfResource<
+    GLTF & {
+      nodes: {
+        Axe_small: Mesh;
+      };
+    }
+  >(() => axeSmallApp);
+  protected axeGeometry = computed(() => {
+    return this.smallAxeGltf.value()?.nodes.Axe_small.geometry;
+  });
 
   generateClouds() {
-    return Array(4)
+    return Array(2)
       .fill(0)
       .map((_, index) => ({
         id: `cloud-${index}`,
@@ -203,7 +207,6 @@ export default class AxeThrowingExperience {
     extend({
       MeshStandardMaterial,
       Mesh,
-      BoxGeometry,
       DirectionalLight,
       Group,
     });

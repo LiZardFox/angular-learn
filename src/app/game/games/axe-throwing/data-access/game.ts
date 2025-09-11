@@ -50,12 +50,12 @@ export class Game {
   }
   startGame() {
     this.firstGame.set(false);
-    this.throws.set(5);
+    this.throws.set(3);
     this.balloonsHit.set(0);
     this.targetsHit.set(0);
     this.axeLaunched.set(false);
     this.balloons.set(
-      new Array(50).fill(0).map((_, i) => ({
+      new Array(75).fill(0).map((_, i) => ({
         id: `balloon_${i}_${Math.random()}`,
         position: new Vector3(
           randFloat(8, 18),
@@ -82,20 +82,16 @@ export class Game {
   constructor() {
     this.loadHighScore();
     effect(() => {
-      const [score] = [this.score()];
-      const highScore = untracked(() => this.highScore());
+      const [score, highScore] = [this.score(), untracked(this.highScore)];
       if (score > highScore) {
         this.highScore.set(score);
-        this.saveHighScore();
+        this.saveHighScore(highScore);
       }
     });
   }
 
-  saveHighScore() {
-    localStorage.setItem(
-      'axe-throwing-high-score',
-      this.highScore().toString(),
-    );
+  saveHighScore(highScore: number) {
+    localStorage.setItem('axe-throwing-high-score', highScore.toString());
   }
 
   loadHighScore() {

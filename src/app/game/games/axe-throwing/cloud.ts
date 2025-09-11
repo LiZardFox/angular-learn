@@ -52,7 +52,7 @@ export class Cloud {
   range = input<[number, number]>([-100, 100]);
   maxVelocity = signal(2);
   group = viewChild<ElementRef<Group>>('group');
-  velocity = randFloatSpread(0.5);
+  velocity = randFloatSpread(1);
 
   constructor() {
     beforeRender(({ delta }) => {
@@ -62,7 +62,7 @@ export class Cloud {
         this.range(),
       ];
       if (!group) return;
-      this.velocity += randFloatSpread(0.5);
+      this.velocity += randFloatSpread(0.05);
       this.velocity = Math.min(
         Math.max(this.velocity, -maxVelocity),
         maxVelocity,
