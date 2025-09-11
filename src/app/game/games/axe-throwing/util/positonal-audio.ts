@@ -7,6 +7,7 @@ import {
   input,
   OnDestroy,
   OnInit,
+  output,
   viewChild,
 } from '@angular/core';
 import {
@@ -46,8 +47,9 @@ export class PositionalAudio implements OnInit, OnDestroy {
   options = input<PositionalAudioInputs>({});
   listener = new AudioListener();
   buffer = loaderResource(() => AudioLoader, this.url);
+  ended = output<void>();
 
-  sound = viewChild.required<ElementRef<PositionalAudioImpl>>('sound');
+  sound = viewChild<ElementRef<PositionalAudioImpl>>('sound');
 
   private store = injectStore();
 
@@ -71,6 +73,18 @@ export class PositionalAudio implements OnInit, OnDestroy {
         sound.setLoop(loop);
         if (autoplay && !sound.isPlaying) sound.play();
       }
+    });
+
+    effect((onCleanup) => {
+      const [sound, buffer] = [
+        this.sound()?.nativeElement,
+        this.buffer.value(),
+      ];
+      if (!buffer || !sound?.source) return;
+
+      const onEnded = () => this.ended.emit();
+      sound.source?.addEventListener('ended', onEnded);
+      onCleanup(() => sound.source?.removeEventListener('ended', onEnded));
     });
   }
 

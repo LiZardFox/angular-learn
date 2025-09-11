@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { computed, effect, Injectable, signal, untracked } from '@angular/core';
 import { MeshStandardMaterial, Vector3 } from 'three';
 import { randFloat, randFloatSpread } from 'three/src/math/MathUtils.js';
 
@@ -31,14 +31,29 @@ export interface Balloon {
   providedIn: 'root',
 })
 export class Game {
+  firstGame = signal(true);
   axeLaunched = signal(false);
   balloons = signal<Balloon[]>([]);
+  balloonsHit = signal(0);
+  targetsHit = signal(0);
+  throws = signal(0);
+  highScore = signal(0);
+
+  readonly score = computed(
+    () => this.balloonsHit() * 5 + this.targetsHit() * 25,
+  );
   launchAxe() {
-    if (this.axeLaunched()) return;
+    if (this.axeLaunched() || this.throws() <= 0) return;
     this.axeLaunched.set(true);
+    this.throws.update((t) => t - 1);
     setTimeout(() => this.axeLaunched.set(false), 2000);
   }
   startGame() {
+    this.firstGame.set(false);
+    this.throws.set(5);
+    this.balloonsHit.set(0);
+    this.targetsHit.set(0);
+    this.axeLaunched.set(false);
     this.balloons.set(
       new Array(50).fill(0).map((_, i) => ({
         id: `balloon_${i}_${Math.random()}`,
@@ -53,5 +68,40 @@ export class Game {
           ],
       })),
     );
+  }
+  removeBalloon(id: string) {
+    this.balloons.set(this.balloons().filter((b) => b.id !== id));
+  }
+  onBalloonHit() {
+    this.balloonsHit.update((h) => h + 1);
+  }
+  onTargetHit() {
+    this.targetsHit.update((h) => h + 1);
+  }
+
+  constructor() {
+    this.loadHighScore();
+    effect(() => {
+      const [score] = [this.score()];
+      const highScore = untracked(() => this.highScore());
+      if (score > highScore) {
+        this.highScore.set(score);
+        this.saveHighScore();
+      }
+    });
+  }
+
+  saveHighScore() {
+    localStorage.setItem(
+      'axe-throwing-high-score',
+      this.highScore().toString(),
+    );
+  }
+
+  loadHighScore() {
+    const saved = localStorage.getItem('axe-throwing-high-score');
+    if (saved) {
+      this.highScore.set(parseInt(saved, 10));
+    }
   }
 }

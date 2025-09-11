@@ -1,10 +1,19 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, viewChild } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { target } from './models';
 import { gltfResource } from 'angular-three-soba/loaders';
 import { beforeRender, extend, NgtArgs } from 'angular-three';
 import { degToRad } from 'three/src/math/MathUtils.js';
-import { NgtrRigidBody } from 'angular-three-rapier';
+import {
+  NgtrIntersectionEnterPayload,
+  NgtrRigidBody,
+} from 'angular-three-rapier';
 import { Object3D } from 'three';
+import { Game } from './data-access/game';
 
 @Component({
   selector: 'game-axe-throwing-target',
@@ -32,6 +41,8 @@ export class Target {
   protected readonly degToRad = degToRad;
   targetGltf = gltfResource(() => target);
   private rigidBody = viewChild.required(NgtrRigidBody);
+  gameState = inject(Game);
+
   constructor() {
     extend({ Object3D });
 

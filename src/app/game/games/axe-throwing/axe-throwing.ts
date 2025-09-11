@@ -3,7 +3,7 @@ import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
-import { extend, injectStore, NgtArgs } from 'angular-three';
+import { extend, NgtArgs } from 'angular-three';
 import { NgtCanvas } from 'angular-three/dom';
 import { NgtrPhysics } from 'angular-three-rapier';
 import { NgtpBloom, NgtpEffectComposer } from 'angular-three-postprocessing';
@@ -20,7 +20,7 @@ import { AxeThrowingOverlay } from './ui/overlay';
     <ngt-canvas [camera]="{ position: [-0.1, 0, 0], fov: 50 }" shadows>
       <ng-template canvasContent>
         <ngt-color attach="background" *args="['#111']" />
-        <ngtr-physics>
+        <ngtr-physics [options]="{ debug: false }">
           <ng-template>
             <game-axe-throwing-experience />
           </ng-template>

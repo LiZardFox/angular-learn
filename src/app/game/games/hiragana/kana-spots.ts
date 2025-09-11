@@ -14,7 +14,7 @@ import {
   MeshStandardMaterial,
   Object3D,
 } from 'three';
-import { beforeRender, extend } from 'angular-three';
+import { extend } from 'angular-three';
 import {
   NgtrAnyCollider,
   NgtrCylinderCollider,

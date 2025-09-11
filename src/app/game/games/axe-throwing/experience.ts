@@ -4,9 +4,9 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   effect,
   ElementRef,
+  inject,
   viewChild,
 } from '@angular/core';
-import { NgtsCameraControls } from 'angular-three-soba/controls';
 import {
   beforeRender,
   createAttachFunction,
@@ -25,19 +25,53 @@ import {
 import { GradientSky } from './gradient-sky';
 import { AxeController } from './axe-controller';
 import { Target } from './target';
-import { VFXEmitter, VFXParticles } from 'wawa-vfx-vanilla';
+import { RenderMode, VFXEmitter, VFXParticles } from 'wawa-vfx-vanilla';
 import { NgtsEnvironment } from 'angular-three-soba/staging';
 import { Balloons } from './balloons';
+import { Particles } from './util/vfx-particles';
+import { ParticleEmitter } from './util/vfx-emitter';
+import { Game } from './data-access/game';
+import { NgtsCameraControls } from 'angular-three-soba/controls';
+import { Walls } from './walls';
+import { AncientRuin } from './ancient-ruin';
+import { degToRad } from 'three/src/math/MathUtils.js';
 
 @Component({
   selector: 'game-axe-throwing-experience',
   template: `
-    <ngts-camera-controls />
-
+    <ngts-camera-controls
+      [options]="{
+        mouseButtons: { left: 0, middle: 0, right: 0, wheel: 0 },
+        touches: { one: 0, two: 0, three: 0 },
+      }"
+    />
     <ngt-group [position.y]="-1" [position.x]="20">
       <game-axe-throwing-target />
     </ngt-group>
 
+    <vfx-emitter
+      emitterName="stars"
+      [settings]="{
+        duration: 10,
+        delay: 0,
+        nbParticles: 5000,
+        spawnMode: 'time',
+        loop: true,
+        startPositionMin: [-20, -20, -20],
+        startPositionMax: [20, 20, 20],
+        startRotationMin: [0, 0, 0],
+        startRotationMax: [0, 0, 0],
+        particlesLifetime: [4, 10],
+        speed: [0, 0.2],
+        directionMin: [-1, -1, -1],
+        directionMax: [1, 1, 1],
+        rotationSpeedMin: [0, 0, 0],
+        rotationSpeedMax: [0, 0, 0],
+        colorStart: ['#ffffff', '#b7b0e3', 'pink'],
+        size: [0.01, 0.05],
+      }"
+    />
+    <game-axe-throwing-walls />
     <game-axe-throwing-balloons />
     <game-axe-throwing-controller />
     <gradient-sky />
@@ -67,42 +101,72 @@ import { Balloons } from './balloons';
         [fov]="80"
       />
     </ngt-directional-light>
+    <game-axe-throwing-ancient-ruin
+      [options]="{
+        castShadow: true,
+        receiveShadow: true,
+        scale: 3,
+        rotation: [0, degToRad(-90), 0],
+        position: [10, -8, 0],
+      }"
+    />
     <ngts-environment [options]="{ preset: 'sunset' }" />
-    <ngt-wawa-particles
-      #particles
-      *args="[
-        'sparks',
-        {
-          fadeAlpha: [0, 1],
-          fadeSize: [0, 0],
-          gravity: [0, -9.81, 0],
-          intensity: 8,
-          nbParticles: 100000,
-          renderMode: 'billboard',
-        },
-      ]"
-      [attach]="attachParticles"
+    <vfx-particles
+      name="stars"
+      [settings]="{
+        fadeAlpha: [0.5, 0.5],
+        fadeSize: [0.5, 0.5],
+        gravity: [0, 0.2, 0],
+        intensity: 5,
+        nbParticles: 5000,
+        renderMode: RenderMode.Billboard,
+      }"
+    />
+    <vfx-particles
+      name="sparks"
+      [settings]="{
+        fadeAlpha: [0, 1],
+        fadeSize: [0, 0],
+        gravity: [0, -9.81, 0],
+        intensity: 8,
+        nbParticles: 100000,
+        renderMode: RenderMode.Billboard,
+      }"
+    />
+    <vfx-particles
+      name="axes"
+      [settings]="{
+        fadeAlpha: [0, 0],
+        fadeSize: [0, 1],
+        intensity: 2,
+        nbParticles: 200,
+        renderMode: RenderMode.Mesh,
+      }"
     />
   `,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgtsCameraControls,
     NgtsGrid,
     NgtsPerspectiveCamera,
     GradientSky,
     AxeController,
     Target,
     NgtsEnvironment,
-    NgtArgs,
     Balloons,
+    Particles,
+    ParticleEmitter,
+    NgtsCameraControls,
+    Walls,
+    AncientRuin,
   ],
 })
 export default class AxeThrowingExperience {
-  particles = viewChild<ElementRef<VFXParticles>>('particles');
-  attachParticles = createAttachFunction<VFXParticles>(({ store, child }) => {
-    store().scene.add(child.getMesh());
-  });
+  protected RenderMode = RenderMode;
+  protected readonly degToRad = degToRad;
+
+  private gameState = inject(Game);
+  private controls = viewChild(NgtsCameraControls);
   constructor() {
     extend({
       MeshStandardMaterial,
@@ -114,9 +178,27 @@ export default class AxeThrowingExperience {
       WawaEmitter: VFXEmitter,
     });
 
-    beforeRender(({ clock }) => {
-      console.log(this.particles()?.nativeElement, 'Sparkle');
-      this.particles()?.nativeElement.update(clock.getElapsedTime());
+    effect(() => {
+      const [axeLaunched, throws, firstGame] = [
+        this.gameState.axeLaunched(),
+        this.gameState.throws(),
+        this.gameState.firstGame(),
+      ];
+
+      const controls = this.controls()?.controls();
+      if (!controls) return;
+
+      if (firstGame) {
+        controls.setLookAt(-15, -5, 20, 10, 0, 0, true);
+      } else if (axeLaunched || throws === 0) {
+        if (window.innerWidth < 1024) {
+          controls.setLookAt(-10, 10, 40, 10, 0, 0, true);
+        } else {
+          controls.setLookAt(10, 0, 30, 10, 0, 0, true);
+        }
+      } else {
+        controls.setLookAt(-0.1, 0, 0, 0, 0, 0, true);
+      }
     });
   }
 }
